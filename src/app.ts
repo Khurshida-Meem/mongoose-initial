@@ -1,6 +1,6 @@
 import express, { Application, NextFunction, Request, Response } from 'express'
 import cors from 'cors';
-import { Schema } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
 const app: Application = express()
 // using cors
@@ -18,13 +18,13 @@ app.get('/', (req: Request, res: Response, next: NextFunction) => {
         password: string;
         name: {
             firstName: string;
-            middleName: string;
+            middleName?: string;
             lastName: string;
         };
         dateOfBirth?: string;
         gender: "male" | "female";
         email?: string;
-        contactInfo: string;
+        contact?: string;
     }
 
     // res.send('Hello World!');
@@ -47,10 +47,49 @@ app.get('/', (req: Request, res: Response, next: NextFunction) => {
             firstName: {
                 type: String,
                 required: true,
-            }
+            },
+            middleName: {
+                type: String,
+            },
+            lastName: {
+                type: String,
+                required: true,
+            },
         },
-        email: { type: String, required: true },
+        dateOfBirth: {
+            type: String,
+        },
+        gender: {
+            type: String,
+            enum: ['male', 'female']
+        },
+        email: { type: String },
+        contact: { type: String }
     });
+
+    const User = model<IUser>("User", userSchema);
+
+    const createUserToDB = async () => {
+        const user = new User({
+            id: "2",
+            role: "student",
+            password: "meem",
+            name: {
+                firstName: "Sazzadul",
+                middleName: "Alam",
+                lastName: "Rumi",
+            },
+            dateOfBirth: "16",
+            gender: "female",
+            email: "meemrumi59@gmail.com",
+            contact: "019999999",
+        });
+        await user.save();
+
+        console.log(user);
+    }
+    createUserToDB();
+
 });
 
 
